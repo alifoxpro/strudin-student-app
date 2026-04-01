@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سترودن - مساعد الطالب الذكي</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- الشريط الجانبي -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <rect width="40" height="40" rx="10" fill="#4F46E5"/>
+                    <path d="M12 28V14l8-4 8 4v14l-8 4-8-4z" stroke="#fff" stroke-width="2" fill="none"/>
+                    <path d="M20 10v18M12 14l8 4 8-4" stroke="#fff" stroke-width="2"/>
+                </svg>
+                <h1>سترودن</h1>
+            </div>
+            <button class="menu-toggle" id="menuToggle" aria-label="القائمة">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <a href="#" class="nav-link active" data-page="dashboard">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                    <span>لوحة التحكم</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="schedule">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <span>الجدول الدراسي</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="homework">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>الواجبات</span>
+                    <span class="badge" id="homeworkBadge" style="display:none">0</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="timer">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                    <span>مؤقت المذاكرة</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="analytics">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                    </svg>
+                    <span>تحليل الأداء</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-page="ai">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a7 7 0 017 7c0 2.5-1.3 4.7-3.2 6H8.2C6.3 13.7 5 11.5 5 9a7 7 0 017-7z"/>
+                        <line x1="9" y1="17" x2="15" y2="17"/>
+                        <line x1="10" y1="20" x2="14" y2="20"/>
+                    </svg>
+                    <span>المساعد الذكي</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="btn-settings" id="btnSettings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <span>الإعدادات</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content" id="mainContent">
+        <!-- لوحة التحكم -->
+        <section class="page active" id="page-dashboard">
+            <div class="page-header">
+                <h2>مرحباً بك! 👋</h2>
+                <p class="date-display" id="currentDate"></p>
+            </div>
+            <div class="quote-card" id="dailyQuote">
+                <p class="quote-text"></p>
+            </div>
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="todayClassesCount">0</h3>
+                        <p>حصص اليوم</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"/>
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pendingHomeworkCount">0</h3>
+                        <p>واجبات معلّقة</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="studyHoursToday">0</h3>
+                        <p>ساعات مذاكرة</p>
+                    </div>
+                </div>
+                <div class="stat-card" style="cursor:pointer" onclick="document.querySelector('[data-page=analytics]').click()">
+                    <div class="stat-icon purple">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="dashboardAvgGrade">-</h3>
+                        <p>المعدل العام</p>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-sections">
+                <div class="dashboard-card">
+                    <h3>📚 الحصص القادمة</h3>
+                    <div id="upcomingClasses" class="list-container">
+                        <p class="empty-state">لا توجد حصص اليوم</p>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <h3>📝 واجبات مستحقة قريباً</h3>
+                    <div id="upcomingHomework" class="list-container">
+                        <p class="empty-state">لا توجد واجبات مستحقة</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- الجدول الدراسي -->
+        <section class="page" id="page-schedule">
+            <div class="page-header">
+                <h2>الجدول الدراسي</h2>
+                <button class="btn-primary" id="addClassBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    إضافة حصة
+                </button>
+            </div>
+            <div class="schedule-container">
+                <div class="schedule-grid" id="scheduleGrid">
+                    <!-- يتم ملؤه بواسطة JavaScript -->
+                </div>
+            </div>
+            <!-- نافذة إضافة حصة -->
+            <div class="modal" id="classModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="classModalTitle">إضافة حصة جديدة</h3>
+                        <button class="modal-close" id="closeClassModal">&times;</button>
+                    </div>
+                    <form id="classForm">
+                        <div class="form-group">
+                            <label for="className">اسم المادة</label>
+                            <input type="text" id="className" required placeholder="مثال: الرياضيات">
+                        </div>
+                        <div class="form-group">
+                            <label for="classTeacher">المعلم</label>
+                            <input type="text" id="classTeacher" placeholder="اسم المعلم (اختياري)">
+                        </div>
+                        <div class="form-group">
+                            <label for="classDay">اليوم</label>
+                            <select id="classDay" required>
+                                <option value="0">الأحد</option>
+                                <option value="1">الإثنين</option>
+                                <option value="2">الثلاثاء</option>
+                                <option value="3">الأربعاء</option>
+                                <option value="4">الخميس</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="classStart">وقت البداية</label>
+                                <input type="time" id="classStart" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="classEnd">وقت النهاية</label>
+                                <input type="time" id="classEnd" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="classColor">لون المادة</label>
+                            <div class="color-picker" id="colorPicker">
+                                <button type="button" class="color-option selected" data-color="#4F46E5" style="background:#4F46E5"></button>
+                                <button type="button" class="color-option" data-color="#059669" style="background:#059669"></button>
+                                <button type="button" class="color-option" data-color="#D97706" style="background:#D97706"></button>
+                                <button type="button" class="color-option" data-color="#DC2626" style="background:#DC2626"></button>
+                                <button type="button" class="color-option" data-color="#7C3AED" style="background:#7C3AED"></button>
+                                <button type="button" class="color-option" data-color="#0891B2" style="background:#0891B2"></button>
+                                <button type="button" class="color-option" data-color="#BE185D" style="background:#BE185D"></button>
+                                <button type="button" class="color-option" data-color="#4338CA" style="background:#4338CA"></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="classRoom">القاعة / الغرفة</label>
+                            <input type="text" id="classRoom" placeholder="رقم القاعة (اختياري)">
+                        </div>
+                        <input type="hidden" id="classId">
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">حفظ</button>
+                            <button type="button" class="btn-secondary" id="cancelClassBtn">إلغاء</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- الواجبات -->
+        <section class="page" id="page-homework">
+            <div class="page-header">
+                <h2>الواجبات والمهام</h2>
+                <button class="btn-primary" id="addHomeworkBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    إضافة واجب
+                </button>
+            </div>
+            <div class="homework-filters">
+                <button class="filter-btn active" data-filter="all">الكل</button>
+                <button class="filter-btn" data-filter="pending">معلّق</button>
+                <button class="filter-btn" data-filter="completed">منجز</button>
+                <button class="filter-btn" data-filter="overdue">متأخر</button>
+            </div>
+            <div class="homework-list" id="homeworkList">
+                <p class="empty-state">لا توجد واجبات بعد. أضف واجبك الأول!</p>
+            </div>
+            <!-- نافذة إضافة واجب -->
+            <div class="modal" id="homeworkModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="homeworkModalTitle">إضافة واجب جديد</h3>
+                        <button class="modal-close" id="closeHomeworkModal">&times;</button>
+                    </div>
+                    <form id="homeworkForm">
+                        <div class="form-group">
+                            <label for="hwTitle">عنوان الواجب</label>
+                            <input type="text" id="hwTitle" required placeholder="مثال: حل تمارين الفصل الثالث">
+                        </div>
+                        <div class="form-group">
+                            <label for="hwSubject">المادة</label>
+                            <input type="text" id="hwSubject" required placeholder="مثال: الرياضيات">
+                        </div>
+                        <div class="form-group">
+                            <label for="hwDueDate">تاريخ التسليم</label>
+                            <input type="date" id="hwDueDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hwPriority">الأولوية</label>
+                            <select id="hwPriority">
+                                <option value="low">منخفضة</option>
+                                <option value="medium" selected>متوسطة</option>
+                                <option value="high">عالية</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hwNotes">ملاحظات</label>
+                            <textarea id="hwNotes" rows="3" placeholder="تفاصيل إضافية (اختياري)"></textarea>
+                        </div>
+                        <input type="hidden" id="hwId">
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">حفظ</button>
+                            <button type="button" class="btn-secondary" id="cancelHomeworkBtn">إلغاء</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- مؤقت المذاكرة -->
+        <section class="page" id="page-timer">
+            <div class="page-header">
+                <h2>مؤقت المذاكرة</h2>
+            </div>
+            <div class="timer-container">
+                <div class="timer-card">
+                    <div class="timer-subject">
+                        <label for="timerSubject">المادة:</label>
+                        <input type="text" id="timerSubject" placeholder="ماذا تذاكر؟">
+                    </div>
+                    <div class="timer-display" id="timerDisplay">
+                        <svg class="timer-ring" viewBox="0 0 200 200">
+                            <circle class="timer-ring-bg" cx="100" cy="100" r="90"/>
+                            <circle class="timer-ring-progress" cx="100" cy="100" r="90" id="timerProgress"/>
+                        </svg>
+                        <div class="timer-text">
+                            <span id="timerMinutes">25</span>:<span id="timerSeconds">00</span>
+                        </div>
+                        <div class="timer-label" id="timerLabel">وقت المذاكرة</div>
+                    </div>
+                    <div class="timer-controls">
+                        <button class="btn-timer btn-start" id="timerStart">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5,3 19,12 5,21"/>
+                            </svg>
+                            ابدأ
+                        </button>
+                        <button class="btn-timer btn-pause" id="timerPause" style="display:none">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="4" width="4" height="16"/>
+                                <rect x="14" y="4" width="4" height="16"/>
+                            </svg>
+                            إيقاف مؤقت
+                        </button>
+                        <button class="btn-timer btn-reset" id="timerReset">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 4v6h6"/>
+                                <path d="M3.51 15a9 9 0 105.64-12.36L1 10"/>
+                            </svg>
+                            إعادة
+                        </button>
+                    </div>
+                    <div class="timer-settings">
+                        <div class="timer-setting">
+                            <label>مذاكرة (دقائق)</label>
+                            <input type="number" id="workDuration" value="25" min="5" max="90">
+                        </div>
+                        <div class="timer-setting">
+                            <label>استراحة قصيرة</label>
+                            <input type="number" id="shortBreak" value="5" min="1" max="30">
+                        </div>
+                        <div class="timer-setting">
+                            <label>استراحة طويلة</label>
+                            <input type="number" id="longBreak" value="15" min="5" max="60">
+                        </div>
+                    </div>
+                </div>
+                <div class="timer-stats">
+                    <h3>📊 إحصائيات اليوم</h3>
+                    <div class="stats-grid">
+                        <div class="mini-stat">
+                            <span class="mini-stat-value" id="sessionsToday">0</span>
+                            <span class="mini-stat-label">جلسات</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="mini-stat-value" id="minutesToday">0</span>
+                            <span class="mini-stat-label">دقيقة</span>
+                        </div>
+                    </div>
+                    <h3>💡 نصائح للتركيز</h3>
+                    <div class="tips-container" id="studyTips">
+                        <p class="tip">ابتعد عن الجوال أثناء المذاكرة</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- تحليل الأداء -->
+        <section class="page" id="page-analytics">
+            <div class="page-header">
+                <h2>📊 تحليل الأداء الذكي</h2>
+                <button class="btn-primary" id="addGradeBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    إضافة درجة
+                </button>
+            </div>
+
+            <!-- بطاقات الملخص -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="avgGrade">-</h3>
+                        <p>المعدل العام</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20V10M18 20V4M6 20v-4"/>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="bestSubject">-</h3>
+                        <p>أقوى مادة</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="weakSubject">-</h3>
+                        <p>تحتاج تركيز</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalGrades">0</h3>
+                        <p>إجمالي الدرجات</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الرسم البياني -->
+            <div class="analytics-charts">
+                <div class="dashboard-card">
+                    <h3>📈 متوسط الدرجات حسب المادة</h3>
+                    <div class="chart-container" id="subjectChart"></div>
+                </div>
+                <div class="dashboard-card">
+                    <h3>📉 تطور الأداء عبر الوقت</h3>
+                    <div class="chart-container" id="timelineChart"></div>
+                </div>
+            </div>
+
+            <!-- تحليل AI -->
+            <div class="ai-analysis-card" id="aiAnalysisCard">
+                <div class="ai-analysis-header">
+                    <h3>🧠 تحليل الذكاء الاصطناعي</h3>
+                    <button class="btn-primary" id="generateAnalysisBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a7 7 0 017 7c0 2.5-1.3 4.7-3.2 6H8.2C6.3 13.7 5 11.5 5 9a7 7 0 017-7z"/>
+                        </svg>
+                        تحليل بالذكاء الاصطناعي
+                    </button>
+                </div>
+                <div class="ai-analysis-content" id="aiAnalysisContent">
+                    <p class="empty-state">اضغط الزر أعلاه لتحليل أدائك بالذكاء الاصطناعي وإنشاء خطة مذاكرة مخصصة لك</p>
+                </div>
+            </div>
+
+            <!-- جدول الدرجات -->
+            <div class="dashboard-card" style="margin-top:1.5rem">
+                <h3>📋 سجل الدرجات</h3>
+                <div class="grades-table-container">
+                    <table class="grades-table" id="gradesTable">
+                        <thead>
+                            <tr>
+                                <th>المادة</th>
+                                <th>نوع الاختبار</th>
+                                <th>الدرجة</th>
+                                <th>من</th>
+                                <th>النسبة</th>
+                                <th>التاريخ</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gradesBody">
+                            <tr><td colspan="7" class="empty-state">لا توجد درجات بعد</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- نافذة إضافة درجة -->
+            <div class="modal" id="gradeModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="gradeModalTitle">إضافة درجة</h3>
+                        <button class="modal-close" id="closeGradeModal">&times;</button>
+                    </div>
+                    <form id="gradeForm">
+                        <div class="form-group">
+                            <label for="gradeSubject">المادة</label>
+                            <input type="text" id="gradeSubject" required placeholder="مثال: الرياضيات">
+                        </div>
+                        <div class="form-group">
+                            <label for="gradeType">نوع الاختبار</label>
+                            <select id="gradeType">
+                                <option value="quiz">اختبار قصير</option>
+                                <option value="midterm">اختبار نصفي</option>
+                                <option value="final">اختبار نهائي</option>
+                                <option value="homework">واجب</option>
+                                <option value="project">مشروع</option>
+                                <option value="participation">مشاركة</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gradeScore">الدرجة</label>
+                                <input type="number" id="gradeScore" required min="0" placeholder="85">
+                            </div>
+                            <div class="form-group">
+                                <label for="gradeTotal">من</label>
+                                <input type="number" id="gradeTotal" required min="1" value="100" placeholder="100">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="gradeDate">التاريخ</label>
+                            <input type="date" id="gradeDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gradeNotes">ملاحظات</label>
+                            <textarea id="gradeNotes" rows="2" placeholder="ملاحظات عن الاختبار (اختياري)"></textarea>
+                        </div>
+                        <input type="hidden" id="gradeId">
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">حفظ</button>
+                            <button type="button" class="btn-secondary" id="cancelGradeBtn">إلغاء</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- المساعد الذكي -->
+        <section class="page" id="page-ai">
+            <div class="page-header">
+                <h2>المساعد الذكي</h2>
+                <button class="btn-secondary" id="aiSettingsBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    ⚡ إعدادات Groq API
+                </button>
+            </div>
+            <div class="ai-container">
+                <div class="ai-suggestions">
+                    <button class="suggestion-btn" data-prompt="اشرح لي درس">📖 اشرح لي درس</button>
+                    <button class="suggestion-btn" data-prompt="أنشئ أسئلة مراجعة عن">📝 أسئلة مراجعة</button>
+                    <button class="suggestion-btn" data-prompt="لخص لي موضوع">📋 تلخيص موضوع</button>
+                    <button class="suggestion-btn" data-prompt="أعطني نصائح للمذاكرة">💡 نصائح دراسية</button>
+                </div>
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot-message">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <p>مرحباً! أنا مساعدك الذكي <strong>سترودن</strong>، مدعوم بـ <strong>Groq</strong> ⚡ (سرعة فائقة!)</p>
+                                <p>كيف أقدر أساعدك في دراستك اليوم؟</p>
+                                <ul>
+                                    <li>شرح الدروس والمفاهيم</li>
+                                    <li>إنشاء أسئلة مراجعة</li>
+                                    <li>تلخيص المواضيع</li>
+                                    <li>نصائح دراسية</li>
+                                </ul>
+                                <p style="font-size:0.85rem;color:#64748B;margin-top:0.5rem">💡 ابدأ بإدخال مفتاح Groq API من زر "إعدادات API" — المفتاح مجاني!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <button class="btn-mic" id="micBtn" title="تحدث بدلاً من الكتابة">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="1" width="6" height="12" rx="3"/>
+                                <path d="M19 10v1a7 7 0 01-14 0v-1"/>
+                                <line x1="12" y1="19" x2="12" y2="23"/>
+                                <line x1="8" y1="23" x2="16" y2="23"/>
+                            </svg>
+                        </button>
+                        <textarea id="chatInput" placeholder="اكتب سؤالك أو اضغط 🎤 للتحدث..." rows="1"></textarea>
+                        <button class="btn-send" id="sendBtn">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="voice-status" id="voiceStatus" style="display:none">
+                        <div class="voice-waves">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <span class="voice-status-text">جاري الاستماع...</span>
+                        <button class="voice-stop-btn" id="voiceStopBtn">إيقاف</button>
+                    </div>
+                </div>
+            </div>
+            <!-- نافذة إعدادات API -->
+            <div class="modal" id="apiModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>⚡ إعدادات Groq API</h3>
+                        <button class="modal-close" id="closeApiModal">&times;</button>
+                    </div>
+                    <form id="apiForm">
+                        <div class="form-group">
+                            <label for="apiKey">Groq API Key</label>
+                            <input type="password" id="apiKey" placeholder="gsk_...">
+                            <small>احصل على مفتاح مجاني من <a href="https://console.groq.com/keys" target="_blank" style="color:#4F46E5">console.groq.com/keys</a> — يتم حفظه محلياً فقط</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="groqModel">النموذج</label>
+                            <select id="groqModel">
+                                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (متعدد الاستخدام)</option>
+                                <option value="llama-3.1-8b-instant">Llama 3.1 8B (سريع جداً)</option>
+                                <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                                <option value="gemma2-9b-it">Gemma 2 9B</option>
+                            </select>
+                            <small>Llama 3.3 70B هو الأفضل للعربية والشرح التفصيلي</small>
+                        </div>
+                        <div class="form-group" style="display:flex;align-items:center;gap:0.75rem">
+                            <input type="checkbox" id="autoSpeakToggle" checked style="width:auto;accent-color:#4F46E5">
+                            <label for="autoSpeakToggle" style="margin:0;cursor:pointer">🔊 قراءة الرد بالصوت تلقائياً</label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">حفظ</button>
+                            <button type="button" class="btn-secondary" id="cancelApiBtn">إلغاء</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- نافذة الإعدادات -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>الإعدادات</h3>
+                    <button class="modal-close" id="closeSettingsModal">&times;</button>
+                </div>
+                <div class="settings-content">
+                    <div class="form-group">
+                        <label>اسم الطالب</label>
+                        <input type="text" id="studentName" placeholder="اسمك">
+                    </div>
+                    <div class="form-group">
+                        <label>المرحلة</label>
+                        <select id="studentLevel">
+                            <option value="first">الأول ثانوي</option>
+                            <option value="second">الثاني ثانوي</option>
+                            <option value="third">الثالث ثانوي</option>
+                        </select>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label>البيانات</label>
+                        <div class="settings-actions">
+                            <button class="btn-secondary" id="exportDataBtn">📤 تصدير البيانات</button>
+                            <button class="btn-secondary" id="importDataBtn">📥 استيراد البيانات</button>
+                            <input type="file" id="importFile" accept=".json" style="display:none">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-primary" id="saveSettingsBtn">حفظ الإعدادات</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/app.js"></script>
+    <script src="js/schedule.js"></script>
+    <script src="js/homework.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/ai-helper.js"></script>
+</body>
+</html>
