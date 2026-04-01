@@ -125,7 +125,9 @@
     }
 
     // ==========================================
-    // 🔊 تحويل النص إلى كلام (Google TTS - يعمل دائماً بالعربي)
+    // 🔊 تحويل النص إلى كلام
+    // يستخدم SpeechSynthesis إذا توفر صوت عربي
+    // وإلا يفتح Google Translate لقراءة النص
     // ==========================================
 
     function speakText(text) {
@@ -138,90 +140,109 @@
         if (!cleanText) return;
         stopSpeaking();
 
+        // تحقق إذا يوجد صوت عربي في المتصفح
+        const synth = window.speechSynthesis;
+        if (synth) {
+            const voices = synth.getVoices();
+            const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+            if (arabicVoice) {
+                speakWithNativeVoice(cleanText, arabicVoice);
+                return;
+            }
+        }
+
+        // إذا لا يوجد صوت عربي - استخدم Google Translate popup
+        speakWithGooglePopup(cleanText);
+    }
+
+    // === القراءة بصوت المتصفح (إذا توفر عربي) ===
+    function speakWithNativeVoice(text, voice) {
+        const synth = window.speechSynthesis;
         isSpeaking = true;
         updateAllSpeakButtons(true);
 
-        // تقسيم النص لأجزاء (Google TTS يقبل حتى 200 حرف)
-        const chunks = splitForTTS(cleanText, 190);
-        playChunks(chunks, 0);
+        const chunks = splitForTTS(text, 120);
+        let idx = 0;
+
+        function next() {
+            if (idx >= chunks.length || !isSpeaking) {
+                isSpeaking = false;
+                updateAllSpeakButtons(false);
+                return;
+            }
+            synth.cancel();
+            const u = new SpeechSynthesisUtterance(chunks[idx]);
+            u.voice = voice;
+            u.lang = voice.lang;
+            u.rate = 0.9;
+            u.onend = () => { idx++; setTimeout(next, 100); };
+            u.onerror = () => { idx++; setTimeout(next, 100); };
+            synth.speak(u);
+        }
+        next();
+    }
+
+    // === القراءة عبر Google Translate (نافذة صغيرة) ===
+    function speakWithGooglePopup(text) {
+        // أخذ أول 500 حرف فقط
+        const shortText = text.substring(0, 500);
+        const encoded = encodeURIComponent(shortText);
+
+        // فتح Google Translate مع النص - يقرأ تلقائياً عند الضغط على زر السماعة
+        const url = 'https://translate.google.com/?sl=ar&tl=en&text=' + encoded + '&op=translate';
+
+        // فتح نافذة صغيرة
+        const popup = window.open(url, 'tts_popup', 'width=600,height=400,left=100,top=100,scrollbars=yes');
+
+        isSpeaking = true;
+        updateAllSpeakButtons(true);
+
+        // عرض تعليمات للمستخدم
+        showTTSHelp();
+
+        // إيقاف الحالة بعد فترة
+        setTimeout(() => {
+            isSpeaking = false;
+            updateAllSpeakButtons(false);
+        }, 5000);
+    }
+
+    function showTTSHelp() {
+        // عرض رسالة توجيهية
+        const existing = document.getElementById('tts-help-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'tts-help-toast';
+        toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#4F46E5;color:white;padding:12px 24px;border-radius:12px;font-family:Tajawal;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2);text-align:center;direction:rtl;max-width:90%;';
+        toast.innerHTML = '🔊 تم فتح Google Translate — اضغط زر السماعة 🔈 لسماع النص بالعربي';
+        document.body.appendChild(toast);
+
+        setTimeout(() => toast.remove(), 8000);
     }
 
     function splitForTTS(text, maxLen) {
-        const chunks = [];
-        const sentences = text.split(/(?<=[.!?؟،:\n])\s*/);
-        let current = '';
-
-        for (const s of sentences) {
-            if ((current + ' ' + s).length > maxLen && current) {
-                chunks.push(current.trim());
-                current = s;
-            } else {
-                current += (current ? ' ' : '') + s;
-            }
-        }
-        if (current.trim()) chunks.push(current.trim());
-
-        // قسم الأجزاء الطويلة بالمسافات
         const result = [];
-        for (const chunk of chunks) {
-            if (chunk.length > maxLen) {
-                const words = chunk.split(' ');
-                let c = '';
-                for (const w of words) {
-                    if ((c + ' ' + w).length > maxLen && c) {
-                        result.push(c.trim());
-                        c = w;
-                    } else {
-                        c += (c ? ' ' : '') + w;
-                    }
-                }
-                if (c.trim()) result.push(c.trim());
+        const parts = text.split(/(?<=[.!?؟،:\n])\s*/);
+        let current = '';
+        for (const p of parts) {
+            if ((current + ' ' + p).length > maxLen && current) {
+                result.push(current.trim());
+                current = p;
             } else {
-                result.push(chunk);
+                current += (current ? ' ' : '') + p;
             }
         }
+        if (current.trim()) result.push(current.trim());
         return result.length ? result : [text.substring(0, maxLen)];
-    }
-
-    function playChunks(chunks, index) {
-        if (index >= chunks.length || !isSpeaking) {
-            isSpeaking = false;
-            updateAllSpeakButtons(false);
-            return;
-        }
-
-        const text = encodeURIComponent(chunks[index]);
-        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${text}&tl=ar&client=tw-ob`;
-
-        const audio = new Audio(url);
-        currentAudio = audio;
-
-        audio.onended = () => {
-            currentAudio = null;
-            playChunks(chunks, index + 1);
-        };
-
-        audio.onerror = () => {
-            console.warn('TTS audio error, trying next chunk');
-            currentAudio = null;
-            // جرب الجزء التالي
-            playChunks(chunks, index + 1);
-        };
-
-        audio.play().catch(err => {
-            console.warn('TTS play error:', err);
-            isSpeaking = false;
-            updateAllSpeakButtons(false);
-        });
     }
 
     function stopSpeaking() {
         isSpeaking = false;
-        if (currentAudio) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            currentAudio = null;
-        }
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+        const toast = document.getElementById('tts-help-toast');
+        if (toast) toast.remove();
         updateAllSpeakButtons(false);
     }
 
