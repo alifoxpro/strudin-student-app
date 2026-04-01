@@ -191,12 +191,8 @@
             return;
         }
 
-        const apiKey = Storage.get('groqApiKey', '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');
-        if (!apiKey) {
-            document.getElementById('aiAnalysisContent').innerHTML =
-                '<p class="empty-state">يرجى إدخال مفتاح Groq API في إعدادات المساعد الذكي أولاً</p>';
-            return;
-        }
+        const savedKey = Storage.get('groqApiKey', '');
+        const apiKey = savedKey && savedKey.trim() !== '' ? savedKey : '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';
 
         // عرض التحميل
         document.getElementById('aiAnalysisContent').innerHTML = `

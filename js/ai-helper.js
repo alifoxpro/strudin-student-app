@@ -21,7 +21,8 @@
     const DEFAULT_API_KEY = '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';
 
     function getApiKey() {
-        return Storage.get('groqApiKey', DEFAULT_API_KEY);
+        const saved = Storage.get('groqApiKey', '');
+        return saved && saved.trim() !== '' ? saved : DEFAULT_API_KEY;
     }
 
     function saveApiKey(key) {
@@ -238,10 +239,6 @@
         if (isProcessing || !message.trim()) return;
 
         const apiKey = getApiKey();
-        if (!apiKey) {
-            addMessage('bot', 'يرجى إدخال مفتاح Groq API أولاً من خلال زر "إعدادات API" في الأعلى. يمكنك الحصول على مفتاح مجاني من <a href="https://console.groq.com/keys" target="_blank" style="color:#4F46E5;text-decoration:underline">console.groq.com</a>');
-            return;
-        }
 
         // إضافة رسالة المستخدم
         addMessage('user', message);
