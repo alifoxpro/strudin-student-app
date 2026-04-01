@@ -18,8 +18,10 @@
         { id: 'gemma2-9b-it', name: 'Gemma 2 9B' },
     ];
 
+    const DEFAULT_API_KEY = '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';
+
     function getApiKey() {
-        return Storage.get('groqApiKey', '');
+        return Storage.get('groqApiKey', DEFAULT_API_KEY);
     }
 
     function saveApiKey(key) {
@@ -251,7 +253,7 @@
         const typingId = addTypingIndicator();
 
         try {
-            const systemPrompt = `أنت مساعد دراسي ذكي للطلاب في المرحلة الثانوية. اسمك "سترودن".
+            const systemPrompt = `أنت مساعد دراسي ذكي للطلاب في المرحلة الثانوية. اسمك "ضوء القمر".
 مهمتك مساعدة الطلاب في:
 - شرح الدروس والمفاهيم بطريقة بسيطة وواضحة
 - إنشاء أسئلة مراجعة واختبارات

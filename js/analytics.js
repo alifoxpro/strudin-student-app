@@ -191,7 +191,7 @@
             return;
         }
 
-        const apiKey = Storage.get('groqApiKey', '');
+        const apiKey = Storage.get('groqApiKey', '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');
         if (!apiKey) {
             document.getElementById('aiAnalysisContent').innerHTML =
                 '<p class="empty-state">يرجى إدخال مفتاح Groq API في إعدادات المساعد الذكي أولاً</p>';
