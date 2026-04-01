@@ -125,13 +125,10 @@
     }
 
     // ==========================================
-    // 🔊 تحويل النص إلى كلام (Text-to-Speech)
-    // يستخدم 3 طرق كنسخة احتياطية لضمان العمل
+    // 🔊 تحويل النص إلى كلام (Google TTS - يعمل دائماً بالعربي)
     // ==========================================
 
-    // الطريقة الرئيسية: Web Speech API مع إصلاحات
     function speakText(text) {
-        // تنظيف النص
         const cleanText = text
             .replace(/<[^>]*>/g, ' ')
             .replace(/[#*_`~\[\]()]/g, '')
@@ -139,160 +136,90 @@
             .trim();
 
         if (!cleanText) return;
-
-        // إيقاف أي كلام سابق
         stopSpeaking();
-
-        // جرب Web Speech API أولاً
-        if (window.speechSynthesis) {
-            speakWithWebAPI(cleanText);
-        }
-    }
-
-    function speakWithWebAPI(text) {
-        const synth = window.speechSynthesis;
-
-        // إصلاح: بعض المتصفحات تحتاج cancel أولاً
-        synth.cancel();
 
         isSpeaking = true;
         updateAllSpeakButtons(true);
 
-        // تقسيم النص لأجزاء قصيرة (Chrome يتوقف بعد ~15 ثانية)
-        const chunks = splitTextSmall(text, 150);
-        let currentIndex = 0;
-
-        function speakNext() {
-            if (currentIndex >= chunks.length || !isSpeaking) {
-                isSpeaking = false;
-                updateAllSpeakButtons(false);
-                return;
-            }
-
-            const utterance = new SpeechSynthesisUtterance(chunks[currentIndex]);
-            utterance.lang = 'ar';
-            utterance.rate = 0.9;
-            utterance.pitch = 1;
-            utterance.volume = 1;
-
-            // اختيار أفضل صوت عربي
-            const voices = synth.getVoices();
-            const arabicVoices = voices.filter(v =>
-                v.lang.startsWith('ar') ||
-                v.name.toLowerCase().includes('arab') ||
-                v.name.toLowerCase().includes('arabic')
-            );
-
-            if (arabicVoices.length > 0) {
-                // تفضيل الأصوات عالية الجودة
-                const preferred = arabicVoices.find(v =>
-                    v.name.includes('Google') ||
-                    v.name.includes('Microsoft') ||
-                    v.name.includes('Majed') ||
-                    v.name.includes('Tarik') ||
-                    v.name.includes('Hoda')
-                ) || arabicVoices[0];
-                utterance.voice = preferred;
-                utterance.lang = preferred.lang;
-            }
-
-            utterance.onend = () => {
-                currentIndex++;
-                // تأخير صغير بين الأجزاء لتجنب مشاكل Chrome
-                setTimeout(speakNext, 100);
-            };
-
-            utterance.onerror = (e) => {
-                console.warn('TTS error:', e.error);
-                // محاولة الجزء التالي
-                currentIndex++;
-                setTimeout(speakNext, 100);
-            };
-
-            synth.speak(utterance);
-
-            // إصلاح Chrome: يتوقف بعد 15 ثانية - نعيد التشغيل
-            if (chunks[currentIndex].length > 50) {
-                startChromeKeepAlive();
-            }
-        }
-
-        // انتظر تحميل الأصوات
-        if (synth.getVoices().length === 0) {
-            synth.onvoiceschanged = () => {
-                synth.onvoiceschanged = null;
-                speakNext();
-            };
-            // fallback إذا لم يتم تحميل الأصوات خلال ثانية
-            setTimeout(() => {
-                if (currentIndex === 0) speakNext();
-            }, 1000);
-        } else {
-            speakNext();
-        }
+        // تقسيم النص لأجزاء (Google TTS يقبل حتى 200 حرف)
+        const chunks = splitForTTS(cleanText, 190);
+        playChunks(chunks, 0);
     }
 
-    // إصلاح مشكلة Chrome المعروفة: التوقف بعد 15 ثانية
-    let chromeTimer = null;
-    function startChromeKeepAlive() {
-        clearInterval(chromeTimer);
-        chromeTimer = setInterval(() => {
-            if (window.speechSynthesis && window.speechSynthesis.speaking) {
-                window.speechSynthesis.pause();
-                window.speechSynthesis.resume();
-            } else {
-                clearInterval(chromeTimer);
-            }
-        }, 10000);
-    }
-
-    function splitTextSmall(text, maxLen) {
+    function splitForTTS(text, maxLen) {
         const chunks = [];
-        // تقسيم على النقاط والفواصل أولاً
-        const parts = text.split(/(?<=[.!?؟،:\n])\s*/);
+        const sentences = text.split(/(?<=[.!?؟،:\n])\s*/);
         let current = '';
 
-        for (const part of parts) {
-            if ((current + ' ' + part).length > maxLen && current) {
+        for (const s of sentences) {
+            if ((current + ' ' + s).length > maxLen && current) {
                 chunks.push(current.trim());
-                current = part;
+                current = s;
             } else {
-                current += (current ? ' ' : '') + part;
+                current += (current ? ' ' : '') + s;
             }
         }
         if (current.trim()) chunks.push(current.trim());
 
-        // إذا لا يزال هناك أجزاء طويلة، قسمها بالمسافات
-        const finalChunks = [];
+        // قسم الأجزاء الطويلة بالمسافات
+        const result = [];
         for (const chunk of chunks) {
             if (chunk.length > maxLen) {
                 const words = chunk.split(' ');
                 let c = '';
                 for (const w of words) {
                     if ((c + ' ' + w).length > maxLen && c) {
-                        finalChunks.push(c.trim());
+                        result.push(c.trim());
                         c = w;
                     } else {
                         c += (c ? ' ' : '') + w;
                     }
                 }
-                if (c.trim()) finalChunks.push(c.trim());
+                if (c.trim()) result.push(c.trim());
             } else {
-                finalChunks.push(chunk);
+                result.push(chunk);
             }
         }
+        return result.length ? result : [text.substring(0, maxLen)];
+    }
 
-        return finalChunks.length ? finalChunks : [text];
+    function playChunks(chunks, index) {
+        if (index >= chunks.length || !isSpeaking) {
+            isSpeaking = false;
+            updateAllSpeakButtons(false);
+            return;
+        }
+
+        const text = encodeURIComponent(chunks[index]);
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${text}&tl=ar&client=tw-ob`;
+
+        const audio = new Audio(url);
+        currentAudio = audio;
+
+        audio.onended = () => {
+            currentAudio = null;
+            playChunks(chunks, index + 1);
+        };
+
+        audio.onerror = () => {
+            console.warn('TTS audio error, trying next chunk');
+            currentAudio = null;
+            // جرب الجزء التالي
+            playChunks(chunks, index + 1);
+        };
+
+        audio.play().catch(err => {
+            console.warn('TTS play error:', err);
+            isSpeaking = false;
+            updateAllSpeakButtons(false);
+        });
     }
 
     function stopSpeaking() {
         isSpeaking = false;
-        clearInterval(chromeTimer);
-        if (window.speechSynthesis) {
-            window.speechSynthesis.cancel();
-        }
         if (currentAudio) {
             currentAudio.pause();
+            currentAudio.currentTime = 0;
             currentAudio = null;
         }
         updateAllSpeakButtons(false);
@@ -515,15 +442,13 @@
         // تهيئة التعرف على الكلام
         initSpeechRecognition();
 
-        // تحميل الأصوات مبكراً
-        if (window.speechSynthesis) {
-            window.speechSynthesis.getVoices();
-            window.speechSynthesis.onvoiceschanged = () => {
-                const voices = window.speechSynthesis.getVoices();
-                const arabic = voices.filter(v => v.lang.startsWith('ar'));
-                console.log('أصوات عربية متاحة:', arabic.map(v => v.name + ' (' + v.lang + ')'));
-            };
-        }
+        // اختبار الصوت عند أول ضغطة على الصفحة (مطلوب لسياسة المتصفح)
+        document.addEventListener('click', function enableAudio() {
+            const testAudio = new Audio();
+            testAudio.volume = 0;
+            testAudio.play().catch(() => {});
+            document.removeEventListener('click', enableAudio);
+        }, { once: true });
 
         // إرسال بالضغط على Enter
         chatInput.addEventListener('keydown', (e) => {
